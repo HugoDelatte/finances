@@ -5,13 +5,13 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='finances_analysis',
-    version='0.0.1',
+    version='1.0.0',
     author='Hugo Delatte',
     author_email='delatte.hugo@gmail.com',
     description='Analyse your HSBC statements ',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='',
+    url='https://github.com/hugdel/finances_analysis.git',
     packages=setuptools.find_packages(),
     classifiers=[
         'Programming Language :: Python :: 3',
