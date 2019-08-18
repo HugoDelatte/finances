@@ -1,11 +1,10 @@
-from io import BytesIO
 from pdfminer.pdfpage import PDFPage
-from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfinterp import PDFResourceManager
 from pdfminer.layout import LAParams, LTTextBoxHorizontal, LTChar
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.pdfinterp import PDFPageInterpreter
-from pdfminer.converter import TextConverter
+from pathlib import Path
+from typing import Iterator, Union
 from finances_analysis.utils.tools import to_float, extract_characters, to_date_str, to_date
 from finances_analysis.hsbc.vars import COL, CHAR_HEIGHT, CHAR_WIDTH, METHOD
 
@@ -15,7 +14,7 @@ class Char:
     Class representing a character from the HSBC statement
     """
 
-    def __init__(self, lt_char):
+    def __init__(self, lt_char: LTChar):
         self.x0 = round(lt_char.x0, 2)
         self.x1 = round(lt_char.x1, 2)
         self.y0 = round(lt_char.y0, 2)
@@ -61,7 +60,7 @@ class String:
     Class representing a string from the HSBC statement
     """
 
-    def __init__(self, row, col, col_name):
+    def __init__(self, row: int, col: int, col_name: str):
         self.row = row
         self.col = col
         self.col_name = col_name
@@ -80,7 +79,7 @@ class String:
 
 
 class StatementReader:
-    def __init__(self, file):
+    def __init__(self, file: Union[str, Path]):
         self.start_balance = None
         self.transaction_list = []
         self.f = open(file, 'rb')
@@ -98,7 +97,7 @@ class StatementReader:
             page_list.append(str_list)
         return page_list
 
-    def read_page(self, page):
+    def read_page(self, page: Iterator[PDFPage]):
         characters = []
         self.interpreter.process_page(page)
         layout = self.device.get_result()
@@ -142,8 +141,7 @@ class StatementReader:
                     str_list.append(string)
                     break
                 i = i + 1
-        str_list = iter(sorted(str_list,
-                               key=lambda string: (string.row, string.col)))
+        str_list = iter(sorted(str_list, key=lambda x: (x.row, x.col)))
         return str_list
 
     def get_statement_details(self):
@@ -151,7 +149,7 @@ class StatementReader:
         for str_list in page_list:
             self.get_transaction_details(str_list)
 
-    def get_transaction_details(self, str_list):
+    def get_transaction_details(self, str_list: Iterator[String]):
         while True:
             string = next(str_list, None)
             if string is None:
@@ -199,6 +197,7 @@ class StatementReader:
                                 date = prev_transaction['date']
                             transaction = dict(date=date,
                                                method=METHOD[method_symbol],
+                                               method_symbol=method_symbol,
                                                entity=entity,
                                                amount=amount)
                             self.transaction_list.append(transaction)

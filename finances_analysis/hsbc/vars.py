@@ -1,4 +1,3 @@
-
 CHAR_HEIGHT = 10
 CHAR_WIDTH = 5/8
 COL = {

@@ -9,5 +9,6 @@ dependencies:
   - conda-forge::dash=1.1.1
   - conda-forge::cufflinks-py=0.13.0
   - conda-forge::dash-table=4.1.0
+  - conda-forge::colorlog=4.0.2
   - pip:
 

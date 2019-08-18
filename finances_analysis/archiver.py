@@ -1,12 +1,11 @@
 import sqlite3
 import logging
+from finances_analysis.utils.logger import create_logger
 from pathlib import Path, PurePath
 from pandas.tseries.offsets import Day
 from finances_analysis.utils.database import create_db, last_date, balance
 from finances_analysis.utils.tools import to_date, statement_file_date
 from finances_analysis.processing.statement import Statement
-
-logger = logging.getLogger('finances_analysis.archiver')
 
 
 def get_statement_file(statements_folder, last_date):
@@ -20,6 +19,8 @@ def get_statement_file(statements_folder, last_date):
 
 
 def archive_statements(project_folder, database_name, statements_folder):
+    create_logger(project_folder)
+    logger = logging.getLogger('finances_analysis.archiver')
     if not Path(project_folder).exists():
         logger.error(f'folder: {project_folder} not found')
         raise FileNotFoundError
@@ -52,5 +53,7 @@ def archive_statements(project_folder, database_name, statements_folder):
 project_folder = ('C:/Users/hugo/OneDrive/Documents/SynologyDrive/Administrative/'
        'Finances/HSBC/Financial Analysis')
 database_name = 'finance.db'
+database = PurePath(project_folder, database_name)
 statements_folder = project_folder + '/Statments/'
 
+archive_statements(project_folder, database_name, statements_folder)

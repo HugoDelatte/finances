@@ -1,13 +1,18 @@
 import logging
+import pandas as pd
+from typing import Dict
+import sqlite3
 from finances_analysis.utils.database import save_transaction_to_db
 
 logger = logging.getLogger('finances_analysis.transaction')
 
 
 class Transaction:
-    def __init__(self, date, method, entity, amount, entity_mapping):
+    def __init__(self, date: str, method: str, method_symbol: str, entity: str, amount: float,
+                 entity_mapping: pd.DataFrame):
         self.date = date
         self.method = method
+        self.method_symbol = method_symbol
         self.entity = entity
         self.amount = amount
         self.entity_mapping = entity_mapping
@@ -37,19 +42,19 @@ class Transaction:
                 logger.warning(f'      {i} ----> {entity_detail.keyword}')
         return entity_detail_list[0]
 
-    def is_mapping_error(self, entity_detail):
+    def is_mapping_error(self, entity_detail: Dict):
         if entity_detail is None:
             self.error = True
             return self.error
         if self.amount > 0:
-            if entity_detail.type == 'Expense':
+            if entity_detail['type'] == 'Expense':
                 logger.error(f'type and amount are inconsistent for: {self}')
                 self.mapping_error = dict(transaction=self,
                                           error='type and amount are inconsistent')
                 self.error = True
                 return self.error
         else:
-            if (entity_detail.type == 'Income' or entity_detail.type == 'Expense Reimbursement'):
+            if entity_detail['type'] == 'Income' or entity_detail['type'] == 'Expense Reimbursement':
                 logger.error(f'type and amount are inconsistent for: {self}')
                 self.mapping_error = dict(transaction=self,
                                           error='type and amount are inconsistent')
@@ -66,7 +71,7 @@ class Transaction:
             self.category = entity_detail.category
             self.sub_category = entity_detail.sub_category
 
-    def save_to_database(self, db_cursor):
+    def save_to_database(self, db_cursor: sqlite3.Cursor):
         save_transaction_to_db(db_cursor, self)
 
     def __str__(self):
