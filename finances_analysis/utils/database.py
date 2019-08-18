@@ -93,7 +93,7 @@ def balance(db_cursor: sqlite3.Cursor):
     return round(db_cursor.fetchone()[0], 2)
 
 
-def last_date(db_cursor: sqlite3.Cursor):
+def get_db_last_date(db_cursor: sqlite3.Cursor):
     db_cursor.execute('''SELECT MAX(date)
               FROM Statement''')
     return db_cursor.fetchone()[0]

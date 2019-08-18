@@ -1,14 +1,15 @@
 import sqlite3
 import logging
+import datetime as dt
 from finances_analysis.utils.logger import create_logger
 from pathlib import Path, PurePath
 from pandas.tseries.offsets import Day
-from finances_analysis.utils.database import create_db, last_date, balance
+from finances_analysis.utils.database import create_db, get_db_last_date, balance
 from finances_analysis.utils.tools import to_date, statement_file_date
 from finances_analysis.processing.statement import Statement
 
 
-def get_statement_file(statements_folder, last_date):
+def get_statement_file(statements_folder: Path, last_date: dt.date):
     statement_file_list = []
     for statement_file in Path(statements_folder).iterdir():
         if statement_file.name[:10] == 'statements' and statement_file.suffix == '.pdf':
@@ -18,8 +19,8 @@ def get_statement_file(statements_folder, last_date):
     return statement_file_list
 
 
-def archive_statements(project_folder, database_name, statements_folder):
-    create_logger(project_folder)
+def archive_statements(project_folder: str, database_name: str, statements_folder: str):
+    create_logger(Path(project_folder))
     logger = logging.getLogger('finances_analysis.archiver')
     if not Path(project_folder).exists():
         logger.error(f'folder: {project_folder} not found')
@@ -38,22 +39,17 @@ def archive_statements(project_folder, database_name, statements_folder):
         db_cursor = con.cursor()
         create_db(db_cursor)
 
-    last_database_date = (to_date(last_date(last_date), '%Y-%m-%d') - Day(6)).date()
-    statement_file_list = get_statement_file(statements_folder, last_database_date)
-    prev_end_balance = balance(last_date)
+    last_database_date = (to_date(get_db_last_date(db_cursor), '%Y-%m-%d') - Day(6)).date()
+    statement_file_list = get_statement_file(Path(statements_folder), last_database_date)
+    prev_end_balance = balance(db_cursor)
     for statement_file in statement_file_list:
-        statement = Statement(statement_file, project_folder, prev_end_balance)
+        statement = Statement(statement_file, Path(project_folder), prev_end_balance)
         statement.save_to_database(db_cursor)
     con.commit()
     con.close()
 
 
-
-
-project_folder = ('C:/Users/hugo/OneDrive/Documents/SynologyDrive/Administrative/'
+dir = ('C:/Users/hugo/OneDrive/Documents/SynologyDrive/Administrative/'
        'Finances/HSBC/Financial Analysis')
-database_name = 'finance.db'
-database = PurePath(project_folder, database_name)
-statements_folder = project_folder + '/Statments/'
 
-archive_statements(project_folder, database_name, statements_folder)
+archive_statements(dir, 'finance.db', dir + '/Statments/')
