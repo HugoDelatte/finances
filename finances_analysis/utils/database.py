@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import datetime as dt
 import pandas as pd
 
 
@@ -74,7 +73,7 @@ def get_attr_id(c, attribute, value, symbol=None):
             return c.lastrowid
 
 
-def add_transaction(c, trans):
+def save_transaction_to_db(c, trans):
     entity_id = get_attr_id(c, 'entity', trans.entity_name)
     method_id = get_attr_id(c, 'method', trans.method_name,
                             trans.method_symbol)
@@ -99,3 +98,6 @@ def last_date(c):
     c.execute('''SELECT MAX(date)
               FROM Statement''')
     return c.fetchone()[0]
+
+
+
