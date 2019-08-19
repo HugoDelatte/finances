@@ -2,11 +2,11 @@ import pandas as pd
 from pathlib import Path, PurePath
 import sqlite3
 from typing import List, Dict
-from finances_analysis.hsbc.preprocessing import StatementReader
-from finances_analysis.processing.transaction import Transaction
+from finances.hsbc.preprocessing import StatementReader
+from finances.processing.transaction import Transaction
 import logging
 
-logger = logging.getLogger('finances_analysis.statement')
+logger = logging.getLogger('finances.statement')
 
 
 class Statement:

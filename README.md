@@ -1,13 +1,16 @@
-# finances_analysis
+# finances
 
-finances_analysis is a Python library to analyse HSBC statements (in pdf)
+finances is a Python library to analyse bank accounts.
+At the time of writing, HSBC provides personal account statements only in pdf.
+This package read HSBC statements from pdf, save the data into a local sqlite database and analyse the account transactions. 
+
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install finances_analysis.
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install finances.
 
 ```bash
-pip install finances_analysis
+pip install finances
 ```
 
 ## Usage

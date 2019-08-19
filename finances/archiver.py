@@ -1,12 +1,12 @@
 import sqlite3
 import logging
 import datetime as dt
-from finances_analysis.utils.logger import create_logger
+from finances.utils.logger import create_logger
 from pathlib import Path, PurePath
 from pandas.tseries.offsets import Day
-from finances_analysis.utils.database import create_db, get_db_last_date, balance
-from finances_analysis.utils.tools import to_date, statement_file_date
-from finances_analysis.processing.statement import Statement
+from finances.utils.database import create_db, get_db_last_date, balance
+from finances.utils.tools import to_date, statement_file_date
+from finances.processing.statement import Statement
 
 
 def get_statement_file(statements_folder: Path, last_date: dt.date):
@@ -21,7 +21,7 @@ def get_statement_file(statements_folder: Path, last_date: dt.date):
 
 def archive_statements(project_folder: str, database_name: str, statements_folder: str):
     create_logger(Path(project_folder))
-    logger = logging.getLogger('finances_analysis.archiver')
+    logger = logging.getLogger('finances.archiver')
     if not Path(project_folder).exists():
         logger.error(f'folder: {project_folder} not found')
         raise FileNotFoundError

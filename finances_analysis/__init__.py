@@ -1,1 +1,0 @@
-name = 'finances_analysis'

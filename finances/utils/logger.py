@@ -6,7 +6,7 @@ import datetime as dt
 
 def create_logger(project_folder: Path = None):
     today = dt.datetime.today()
-    logger = logging.getLogger('finances_analysis')
+    logger = logging.getLogger('finances')
     logger.setLevel(logging.INFO)
     # Console logger
     console_log = logging.StreamHandler()

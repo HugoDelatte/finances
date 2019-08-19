@@ -2,9 +2,9 @@ import logging
 import pandas as pd
 from typing import Dict
 import sqlite3
-from finances_analysis.utils.database import save_transaction_to_db
+from finances.utils.database import save_transaction_to_db
 
-logger = logging.getLogger('finances_analysis.transaction')
+logger = logging.getLogger('finances.transaction')
 
 
 class Transaction:

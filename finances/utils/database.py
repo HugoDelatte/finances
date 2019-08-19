@@ -1,6 +1,6 @@
 import sqlite3
 import pandas as pd
-from finances_analysis.processing.transaction import Transaction
+from finances.processing.transaction import Transaction
 
 
 def create_db(db_cursor: sqlite3.Cursor):
