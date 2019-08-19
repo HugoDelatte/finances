@@ -1,6 +1,5 @@
 import sqlite3
 import pandas as pd
-from finances.processing.transaction import Transaction
 
 
 def create_db(db_cursor: sqlite3.Cursor):
@@ -73,21 +72,21 @@ def get_attr_id(db_cursor: sqlite3.Cursor, attribute: str, value: str, symbol: s
             return db_cursor.lastrowid
 
 
-def save_transaction_to_db(db_cursor: sqlite3.Cursor, trans: Transaction):
-    entity_id = get_attr_id(db_cursor, 'entity', trans.entity_name)
-    method_id = get_attr_id(db_cursor, 'method', trans.method, trans.method_symbol)
-    type_id = get_attr_id(db_cursor, 'type', trans.type)
-    category_id = get_attr_id(db_cursor, 'category', trans.category)
-    sub_category_id = get_attr_id(db_cursor, 'sub_category', trans.sub_category)
+def save_transaction_to_db(db_cursor: sqlite3.Cursor, transaction):
+    entity_id = get_attr_id(db_cursor, 'entity', transaction.entity_name)
+    method_id = get_attr_id(db_cursor, 'method', transaction.method, transaction.method_symbol)
+    type_id = get_attr_id(db_cursor, 'type', transaction.type)
+    category_id = get_attr_id(db_cursor, 'category', transaction.category)
+    sub_category_id = get_attr_id(db_cursor, 'sub_category', transaction.sub_category)
     db_cursor.execute('''INSERT INTO Statement
               (date, detail, entity_id, amount, method_id, type_id,
               category_id, sub_category_id)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?)''', (trans.date, trans.entity,
-                                                   entity_id, trans.amount, method_id, type_id, category_id,
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?)''', (transaction.date, transaction.entity,
+                                                   entity_id, transaction.amount, method_id, type_id, category_id,
                                                    sub_category_id))
 
 
-def balance(db_cursor: sqlite3.Cursor):
+def get_balance(db_cursor: sqlite3.Cursor):
     db_cursor.execute('''SELECT SUM(amount)
               FROM Statement''')
     return round(db_cursor.fetchone()[0], 2)

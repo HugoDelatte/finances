@@ -4,7 +4,7 @@ import datetime as dt
 from finances.utils.logger import create_logger
 from pathlib import Path, PurePath
 from pandas.tseries.offsets import Day
-from finances.utils.database import create_db, get_db_last_date, balance
+from finances.utils.database import create_db, get_db_last_date, get_balance
 from finances.utils.tools import to_date, statement_file_date
 from finances.processing.statement import Statement
 
@@ -41,7 +41,7 @@ def archive_statements(project_folder: str, database_name: str, statements_folde
 
     last_database_date = (to_date(get_db_last_date(db_cursor), '%Y-%m-%d') - Day(6)).date()
     statement_file_list = get_statement_file(Path(statements_folder), last_database_date)
-    prev_end_balance = balance(db_cursor)
+    prev_end_balance = get_balance(db_cursor)
     for statement_file in statement_file_list:
         statement = Statement(statement_file, Path(project_folder), prev_end_balance)
         statement.save_to_database(db_cursor)

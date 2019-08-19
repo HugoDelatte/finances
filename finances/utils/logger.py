@@ -44,4 +44,4 @@ def clear_old_logs(log_folder: Path, keep_log_days: int):
 
 
 def log_file_date(log_file: Path):
-    return dt.datetime.strptime(log_file.name[:10], '%Y%m%d').date()
+    return dt.datetime.strptime(log_file.name[:8], '%Y%m%d').date()

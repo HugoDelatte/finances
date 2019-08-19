@@ -73,7 +73,7 @@ class Statement:
     def _process(self):
         self.reader.get_statement_details()
         self.start_balance = self.reader.start_balance
-        for transaction in self.reader.transaction_list():
+        for transaction in self.reader.transaction_list:
             new_transaction = Transaction(date=transaction['date'],
                                           method=transaction['method'],
                                           method_symbol=transaction['method_symbol'],

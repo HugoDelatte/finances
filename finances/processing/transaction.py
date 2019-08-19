@@ -47,14 +47,14 @@ class Transaction:
             self.error = True
             return self.error
         if self.amount > 0:
-            if entity_detail['type'] == 'Expense':
+            if entity_detail.type == 'Expense':
                 logger.error(f'type and amount are inconsistent for: {self}')
                 self.mapping_error = dict(transaction=self,
                                           error='type and amount are inconsistent')
                 self.error = True
                 return self.error
         else:
-            if entity_detail['type'] == 'Income' or entity_detail['type'] == 'Expense Reimbursement':
+            if entity_detail.type == 'Income' or entity_detail.type == 'Expense Reimbursement':
                 logger.error(f'type and amount are inconsistent for: {self}')
                 self.mapping_error = dict(transaction=self,
                                           error='type and amount are inconsistent')
