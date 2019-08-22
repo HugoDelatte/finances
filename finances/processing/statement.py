@@ -21,9 +21,13 @@ class Statement:
         self.prev_end_balance = prev_end_balance
         self.entity_mapping = self._get_entity_mapping_file()
         self.error_folder = Path(PurePath(Path(self.project_folder), 'error'))
-        self.transaction_collection = []
+        self.transaction_collection = None
         self._create_error_folder()
         self._delete_error_file()
+
+    @property
+    def mapping_error_df(self):
+        return pd.DataFrame([t.to_dict() for t in self.transaction_collection if t.error])
 
     def _get_entity_mapping_file(self):
         file_name = 'entity_mapping.csv'
@@ -50,16 +54,12 @@ class Statement:
         if self.error_file.exists():
             self.error_file.unlink()
 
-    def _save_error_file(self, mapping_error_list: List[Dict]):
-        mapping_error_df = pd.DataFrame(mapping_error_list)
-        mapping_error_df.to_csv(self.error_file)
+
 
     def _check_mapping_error(self):
-        mapping_error_list = [t.mapping_error for t in self.transaction_collection if t.error]
-        if len(mapping_error_list) > 0:
-            logger.error(f'{len(mapping_error_list)} Entity mapping errors have been found.'
-                         f'please check the error file in {self.error_file}')
-            self._save_error_file(mapping_error_list)
+        if not self.mapping_error_df.empty:
+            logger.error(f'{len(self.mapping_error_df)} Entity mapping errors have been found')
+            self.save_error_file()
             raise AttributeError
 
     def _check_balance_error(self):
@@ -71,6 +71,7 @@ class Statement:
         self.end_balance = round(self.start_balance + sum(t.amount for t in self.transaction_collection), 2)
 
     def _process(self):
+        self.transaction_collection = []
         self.reader.get_statement_details()
         self.start_balance = self.reader.start_balance
         for transaction in self.reader.transaction_list:
@@ -78,13 +79,16 @@ class Statement:
                                           method=transaction['method'],
                                           method_symbol=transaction['method_symbol'],
                                           entity=transaction['entity'],
-                                          amount=transaction['amount'],
-                                          entity_mapping=self.entity_mapping)
-            new_transaction.map_entity_detail()
+                                          amount=transaction['amount'])
+            new_transaction.map_entity_detail(entity_mapping=self.entity_mapping)
             self.transaction_collection.append(new_transaction)
         self._check_mapping_error()
         self._check_balance_error()
         self._get_end_balance()
+
+    def save_error_file(self):
+        logger.error(f'Missing Mappings to complete are in {self.error_file}')
+        self.mapping_error_df.to_csv(self.error_file, index=False)
 
     def save_to_database(self, db_cursor: sqlite3.Cursor):
         self._process()

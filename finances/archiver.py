@@ -53,3 +53,6 @@ dir = ('C:/Users/hugo/OneDrive/Documents/SynologyDrive/Administrative/'
        'Finances/HSBC/Financial Analysis')
 
 archive_statements(dir, 'finance.db', dir + '/Statments/')
+project_folder=dir
+database_name='finance.db'
+statements_folder=dir + '/Statments/'
