@@ -5,8 +5,8 @@ from pdfminer.converter import PDFPageAggregator
 from pdfminer.pdfinterp import PDFPageInterpreter
 from pathlib import Path
 from typing import Iterator, Union
-from finances.utils.tools import to_float, extract_characters, to_date_str, to_date
-from finances.hsbc.vars import COL, CHAR_HEIGHT, CHAR_WIDTH, METHOD
+from ..utils.tools import to_float, extract_characters, to_date_str, to_date
+from ..hsbc.vars import COL, CHAR_HEIGHT, CHAR_WIDTH, METHOD
 
 
 class Char:

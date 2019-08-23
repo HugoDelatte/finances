@@ -7,24 +7,25 @@ import datetime as dt
 def create_logger(project_folder: Path = None):
     today = dt.datetime.today()
     logger = logging.getLogger('finances')
-    logger.setLevel(logging.INFO)
-    # Console logger
-    console_log = logging.StreamHandler()
-    console_log.setLevel(logging.INFO)
-    console_format = '  %(log_color)s%(levelname)-8s%(reset)s | %(log_color)s%(message)s%(reset)s'
-    console_log.setFormatter(ColoredFormatter(console_format))
-    logger.addHandler(console_log)
-    if project_folder is not None:
-        # File logger
-        log_folder = create_log_folder(project_folder)
-        clear_old_logs(log_folder, keep_log_days=5)
-        log_path = PurePath(log_folder, f'{today:%Y%m%d_%Hh%Mm%Ss}.log')
-        file_log = logging.FileHandler(log_path)
-        file_log.setLevel(logging.DEBUG)
-        file_format = '%(asctime)-15s - %(name)-8s - %(levelname)-8s | %(message)s'
-        file_log.setFormatter(logging.Formatter(file_format, '%Y-%m-%d %H:%M:%S'))
-        logger.addHandler(file_log)
-        logger.info(f'Log files are in {log_path}')
+    if len(logger.handlers) == 0:
+        logger.setLevel(logging.INFO)
+        # Console logger
+        console_log = logging.StreamHandler()
+        console_log.setLevel(logging.INFO)
+        console_format = '  %(log_color)s%(levelname)-8s%(reset)s | %(log_color)s%(message)s%(reset)s'
+        console_log.setFormatter(ColoredFormatter(console_format))
+        logger.addHandler(console_log)
+        if project_folder is not None:
+            # File logger
+            log_folder = create_log_folder(project_folder)
+            clear_old_logs(log_folder, keep_log_days=5)
+            log_path = PurePath(log_folder, f'{today:%Y%m%d_%Hh%Mm%Ss}.log')
+            file_log = logging.FileHandler(log_path)
+            file_log.setLevel(logging.DEBUG)
+            file_format = '%(asctime)-15s - %(name)-8s - %(levelname)-8s | %(message)s'
+            file_log.setFormatter(logging.Formatter(file_format, '%Y-%m-%d %H:%M:%S'))
+            logger.addHandler(file_log)
+            logger.info(f'Log files are in {log_path}')
 
 
 def create_log_folder(project_folder: Path):

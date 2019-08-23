@@ -1,10 +1,9 @@
 import pandas as pd
 from pathlib import Path, PurePath
 import sqlite3
-from typing import List, Dict
-from finances.hsbc.preprocessing import StatementReader
-from finances.processing.transaction import Transaction
 import logging
+from ..hsbc.preprocessing import StatementReader
+from ..processing.transaction import Transaction
 
 logger = logging.getLogger('finances.statement')
 
@@ -54,18 +53,18 @@ class Statement:
         if self.error_file.exists():
             self.error_file.unlink()
 
-
-
     def _check_mapping_error(self):
         if not self.mapping_error_df.empty:
             logger.error(f'{len(self.mapping_error_df)} Entity mapping errors have been found')
             self.save_error_file()
-            raise AttributeError
+            raise AttributeError('Entity mapping errors')
 
     def _check_balance_error(self):
         if self.prev_end_balance != self.start_balance:
-            logger.error('Start balance and transactions amounts are different')
-            raise ValueError
+            logger.error(f'Start balance and transactions amounts are different:'
+                         f'Database Ending Balance: {self.prev_end_balance}'
+                         f'/ Statement Starting Balance: {self.start_balance}')
+            raise ValueError('Start balance and transactions amounts are different')
 
     def _get_end_balance(self):
         self.end_balance = round(self.start_balance + sum(t.amount for t in self.transaction_collection), 2)
