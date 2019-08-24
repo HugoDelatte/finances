@@ -4,9 +4,9 @@ import datetime as dt
 from finances.utils.logger import create_logger
 from pathlib import Path, PurePath
 from pandas.tseries.offsets import Day
-from .utils.database import create_db, get_db_last_date, get_balance
-from .utils.tools import to_date, statement_file_date
-from .processing.statement import Statement
+from finances.utils.database import create_db, get_db_last_date, get_balance
+from finances.utils.tools import to_date, statement_file_date
+from finances.processing.statement import Statement
 
 
 def get_statement_file(statements_folder: Path, last_date: dt.date):
