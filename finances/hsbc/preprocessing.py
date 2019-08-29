@@ -6,7 +6,7 @@ from pdfminer.pdfinterp import PDFPageInterpreter
 from pathlib import Path
 from typing import Iterator, Union
 from ..utils.tools import to_float, extract_characters, to_date_str, to_date
-from ..hsbc.vars import COL, CHAR_HEIGHT, CHAR_WIDTH, METHOD
+from ..hsbc.vars import COL, CHAR_HEIGHT, CHAR_WIDTH, METHOD, CCY, ACCOUNT
 
 
 class Char:
@@ -199,7 +199,9 @@ class StatementReader:
                                                method=METHOD[method_symbol],
                                                method_symbol=method_symbol,
                                                entity=entity,
-                                               amount=amount)
+                                               amount=amount,
+                                               ccy=CCY,
+                                               account=ACCOUNT)
                             self.transaction_list.append(transaction)
                         else:
                             prev_transaction = self.transaction_list[-1]

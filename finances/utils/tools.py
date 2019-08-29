@@ -1,6 +1,8 @@
 import datetime as dt
 from pathlib import Path
 from typing import Iterator
+import pandas as pd
+from pandas.tseries.offsets import Day
 from pdfminer.layout import LTTextBoxHorizontal
 
 
@@ -22,3 +24,10 @@ def statement_file_date(file: Path):
 
 def to_float(string: str):
     return float(string.replace(',', ''))
+
+
+def replace_none(sub_category: str):
+    if sub_category is None:
+        return 'None'
+    else:
+        return sub_category

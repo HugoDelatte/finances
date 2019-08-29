@@ -7,12 +7,15 @@ logger = logging.getLogger('finances.transaction')
 
 
 class Transaction:
-    def __init__(self, date: str, method: str, method_symbol: str, entity: str, amount: float):
+    def __init__(self, date: str, method: str, method_symbol: str, entity: str, amount: float, ccy: str,
+                 account: str):
         self.date = date
         self.method = method
         self.method_symbol = method_symbol
         self.entity = entity
         self.amount = amount
+        self.ccy = ccy
+        self.account = account
         self.type = None
         self.entity_name = None
         self.category = None
@@ -43,7 +46,6 @@ class Transaction:
             self.error = True
             return True
         return False
-
 
     def map_entity_detail(self, entity_mapping: pd.DataFrame):
         entity_detail = self.get_entity_detail(entity_mapping)

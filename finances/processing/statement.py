@@ -78,7 +78,9 @@ class Statement:
                                           method=transaction['method'],
                                           method_symbol=transaction['method_symbol'],
                                           entity=transaction['entity'],
-                                          amount=transaction['amount'])
+                                          amount=transaction['amount'],
+                                          ccy=transaction['ccy'],
+                                          account=transaction['account'])
             new_transaction.map_entity_detail(entity_mapping=self.entity_mapping)
             self.transaction_collection.append(new_transaction)
         self._check_mapping_error()

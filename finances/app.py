@@ -1,198 +1,35 @@
-import datetime as dt
-import pandas as pd
-from pandas.tseries.offsets import Day
-import sqlite3
-import plotly.offline as py
-import cufflinks as cf
+import os
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import plotly.graph_objs as go
 import dash_table as dte
-import copy
-import os
-from flask import send_from_directory
-import sys
+from flask.helpers import get_root_path
+from finances.utils.database import ATTRIBUTES
+from finances.app.layout import COLORS, get_color_class_name
+from finances.app.account import Account
 
 # Dash: http://127.0.0.1:8050/
+ASSETS_PATH = os.path.join(get_root_path('__main__'), r'finances\app\assets')
 
 DIR = ('C:/Users/hugo/OneDrive/Documents/SynologyDrive/Administrative/'
        'Finances/HSBC/Financial Analysis')
-TEMP = 'C:\\Temp'
-COLORS = dict(
-    background='#000000',
-    text='#CCCCCC',
-    plot='#191A1A',
-    grid='#404040'
-)
-
-COLUMNS = ['date', 'entity', 'type', 'category',
-           'sub_category', 'detail', 'method', 'amount']
-LEFT_COL = ['date', 'entity', 'type', 'category',
-            'sub_category', 'detail', 'method']
-
-from flask.helpers import get_root_path
-
-assets_path = os.path.join(get_root_path('__main__'), r'finances\app\assets')
-
-
-def to_month(date_str):
-    date = pd.to_datetime(date_str, format='%Y-%m-%d')
-    return (date - Day(6)).strftime('%Y-%m')
-
-
-def month_format(date_str):
-    date = pd.to_datetime(date_str, format='%Y-%m-%d')
-    return (date - Day(6)).strftime('%b %Y')
-
-
-def date_format(date_str):
-    date = pd.to_datetime(date_str, format='%Y-%m-%d')
-    return date.strftime(' %d %b %Y')
-
-
-def replace_none(sub_category):
-    if sub_category is None:
-        return 'None'
-    else:
-        return sub_category
-
-
-def generate_layout(title):
-    return dict(
-        title=title,
-        autosize=True,
-        height=500,
-        font=dict(color=COLORS['text']),
-        titlefont=dict(color=COLORS['text'], size=14),
-        margin=dict(l=45, r=35, b=35, t=45),
-        legend=dict(bgcolor=COLORS['background'],
-                    font=dict(color=COLORS['text']),
-                    orientation='h'),
-        paper_bgcolor=COLORS['background'],
-        plot_bgcolor=COLORS['plot'],
-        yaxis1=dict(tickfont=dict(color=COLORS['text']),
-                    gridcolor=COLORS['grid'],
-                    titlefont=dict(color=COLORS['text']),
-                    zerolinecolor=COLORS['grid'],
-                    showgrid=True,
-                    title=''),
-        xaxis1=dict(tickfont=dict(color=COLORS['text']),
-                    gridcolor=COLORS['grid'],
-                    titlefont=dict(color=COLORS['text']),
-                    zerolinecolor=COLORS['grid'],
-                    showgrid=True,
-                    title=''),
-        barmode='group'
-    )
-
-
 database = DIR + '/finance.db'
-con = sqlite3.connect(database)
-con.execute('pragma foreign_keys=ON')
-c = con.cursor()
-c.execute('''SELECT S.date, S.detail, E.name, S.amount, M.name, T.name,
-          C.name, SC.name
-          FROM Statement S
-          OUTER LEFT JOIN Entity E
-              on E.entity_id = S.entity_id
-          OUTER LEFT JOIN Method M
-              on M.method_id = S.method_id
-          INNER JOIN Type T
-              on T.type_id = S.type_id
-          OUTER LEFT JOIN Category C
-              on C.category_id = S.category_id
-          OUTER LEFT JOIN Sub_category SC
-              on SC.sub_category_id = S.sub_category_id; ''')
-res = c.fetchall()
-con.close()
-cf.go_offline()
-cols = [
-    'date', 'detail', 'entity', 'amount', 'method', 'type',
-    'category', 'sub_category'
-]
-df = pd.DataFrame(res, columns=cols)
-df_month = df.copy()
-df_month.loc[:, ('date')] = df_month['date'].apply(to_month)
-
-app = dash.Dash(__name__, assets_folder=assets_path)
-
-# @app.server.route('/static/<path:path>')
-# def static_file(path):
-#     static_folder = os.path.join(DIR, 'static')
-#     return send_from_directory(static_folder, path)
 
 
-# app.css.append_css(
-#     dict(external_url=('https://cdn.rawgit.com/plotly/dash-app-stylesheets/'
-#                        '2d266c578d2a6e8850ebce48fdb52759b2aef506/'
-#                        'stylesheet-oil-and-gas.css'))
-# )
 
-# Bar Total
-fig_bar = (
-    df_month.groupby(['date', 'category'], as_index=False)['amount']
-        .sum()
-        .pivot(index='date', columns='category', values='amount')
-        .iplot(kind='bar', barmode='group', asFigure=True)
-)
-df_total = (
-    df_month.groupby(['date'], as_index=False)['amount']
-        .sum()
-        .set_index('date')
-)
-fig_bar['layout'] = generate_layout(title='All Transactions')
-fig_bar.add_trace(dict(
-    type='scatter',
-    x=list(df_total.index),
-    y=df_total['amount'],
-    mode='lines+markers',
-    marker=dict(
-        size=3,
-        color='rgba(255, 0, 0, 0.7)'
-    ),
-    line=dict(
-        color='rgba(255, 0, 0, 0.7)',
-        width=2
-    ),
-    name='Total'
-))
+account = Account(database=database, account='HSBC UK')
 
-# Cum total
-fig_total = (
-    df_total.cumsum()
-        .iplot(asFigure=True)
-)
-fig_total['layout'] = generate_layout(title='Total Balance')
-balance = df['amount'].sum()
-month_pnl = (df_month[df_month['date'] == df_month['date'].max()]['amount']
-             .sum())
-avg_pnl = balance / len(set(df_month['date']))
-
-
-def class_name_number(number):
-    if number >= 0:
-        return 'green_text'
-    else:
-        return 'red_text'
-
+app = dash.Dash(__name__, assets_folder=ASSETS_PATH)
 
 app.layout = html.Div(
-    style=dict(backgroundColor=COLORS['background']),
     children=[
         html.Div(
             children=[
                 html.Div(
                     children=[
-                        html.Link(rel='stylesheet',
-                                  href='/static/stylesheet_colors.css'),
                         html.H2(
-                            children=date_format(df['date'].max()),
-                            style=dict(
-                                color=COLORS['text'],
-                                fontSize='100%',
-                                textAlign='center'
-                            )
+                            children=f'Last transaction date: {account.last_transaction_date:%d %b %Y}',
+                            className='header'
                         ),
                         html.Br(),
                         html.Ul(
@@ -201,30 +38,40 @@ app.layout = html.Div(
                                     children=[
                                         html.Span(children='Balance: '),
                                         html.Span(
-                                            children='£{:,.2f}'.format(balance),
-                                            className=class_name_number(balance)
+                                            children=f'{account.balance:,.2f}',
+                                            className=get_color_class_name(account.balance)
                                         )
                                     ]),
                                 html.Li(
                                     children=[
                                         html.Span(
-                                            children=month_format(
-                                                df['date'].max()
-                                            ) + ': '
+                                            children=f'Since beginning of {account.actual_month_end:%B %Y}: '
+                                            f'{account.currency} '
                                         ),
                                         html.Span(
-                                            children='£{:,.2f}'.format(month_pnl),
-                                            className=class_name_number(month_pnl)
+                                            children=f'{account.actual_month_pnl:,.2f}',
+                                            className=get_color_class_name(account.actual_month_pnl)
                                         )
                                     ]),
                                 html.Li(
                                     children=[
                                         html.Span(
-                                            children='Monthly avg: '
+                                            children=f'During {account.previous_month_end:%B %Y}: '
+                                            f'{account.currency} '
                                         ),
                                         html.Span(
-                                            children='£{:,.2f}'.format(avg_pnl),
-                                            className=class_name_number(avg_pnl)
+                                            children=f'{account.previous_month_pnl:,.2f}',
+                                            className=get_color_class_name(account.previous_month_pnl)
+                                        )
+                                    ]),
+                                html.Li(
+                                    children=[
+                                        html.Span(
+                                            children=f'Monthly average: {account.currency} '
+                                        ),
+                                        html.Span(
+                                            children=f'{account.avg_monthly_pnl:,.2f}',
+                                            className=get_color_class_name(account.avg_monthly_pnl)
                                         )
                                     ])
                             ],
@@ -236,7 +83,7 @@ app.layout = html.Div(
                             )
                         )
                     ],
-                    className='two columns'
+                    className='three columns'
                 ),
                 html.Div(
                     children=[
@@ -244,7 +91,6 @@ app.layout = html.Div(
                             children='Transactions Analysis',
                             style=dict(
                                 color=COLORS['text'],
-                                # fontFamily='Bebas',
                                 fontSize='300%',
                                 textAlign='center'
                             )
@@ -273,7 +119,7 @@ app.layout = html.Div(
                     children=[
                         dcc.Graph(
                             id='bar',
-                            figure=fig_bar
+                            figure=account.category_figure_bar
                         ),
                     ],
                     className='eight columns',
@@ -283,7 +129,7 @@ app.layout = html.Div(
                     children=[
                         dcc.Graph(
                             id='total',
-                            figure=fig_total
+                            figure=account.total_figure_cumsum
                         ),
                     ],
                     className='four columns',
@@ -296,7 +142,7 @@ app.layout = html.Div(
             children=[
                 html.Div(
                     children=[
-                        dcc.Graph(id='bar_sub'),
+                        dcc.Graph(id='sub_category_figure_bar'),
                     ],
                     className='eight columns',
                     style=dict(marginTop=20)
@@ -314,10 +160,7 @@ app.layout = html.Div(
                         ),
                         dcc.RadioItems(
                             id='category_radio_item',
-                            options=[
-                                dict(label=k, value=k) for k in
-                                set(df['category'])
-                            ],
+                            options=[dict(label=k, value=k) for k in account.categories],
                             style=dict(color=COLORS['text']),
                             value='Food & Drink'
                         )
@@ -344,12 +187,18 @@ app.layout = html.Div(
         html.Div(
             children=[
                 dte.DataTable(
-                    style_data={'whiteSpace': 'normal', 'backgroundColor': 'rgb(30, 30, 30)'},
+                    style_data={
+                        'whiteSpace': 'normal',
+                        'backgroundColor': 'rgb(30, 30, 30)',
+                        'color': COLORS['text'],
+                        'border': '0px'
+                    },
                     css=[{
                         'selector': '.dash-cell div.dash-cell-value',
                         'rule': 'display: inline; white-space: inherit; overflow: inherit; text-overflow: inherit;'
-                    }],
-                    data=df.to_dict('records'),
+                    }
+                    ],
+                    data=account.transaction_df.to_dict('records'),
                     editable=False,
                     filter_action='native',
                     sort_action='native',
@@ -357,37 +206,50 @@ app.layout = html.Div(
                     selected_rows=[],
                     page_action='native',
                     page_current=0,
-                    page_size=10,
-                    # style_cell={'maxWidth': '180px'},
-                    style_cell_conditional=[
-                        {
-                            'if': {'column_id': c},
-                            'textAlign': 'right',
-                            'color': 'green'
-
-                        }
-                        if c == 'amount' else
-                        {
-                            'if': {'column_id': c},
-                            'textAlign': 'left',
-                            'color': 'white'
-
-                        }
-                        for c in COLUMNS
-                    ],
+                    page_size=50,
                     columns=[
-                        {"name": i, "id": i, "hideable": True} for i in COLUMNS
+                        {'name': value,
+                         'id': key,
+                         'hideable': True} for key, value in ATTRIBUTES.items()
                     ],
+                    style_cell={
+                        'textAlign': 'left',
+                        'color': COLORS['text'],
+                        'boxShadow': '0 0'
+                    },
                     style_data_conditional=[
                         {
                             'if': {'row_index': 'odd'},
                             'backgroundColor': 'rgb(50, 50, 50)'
+                        },
+                        {
+                            'if': {'column_id': 'amount'},
+                            'textAlign': 'right',
                         }
                     ],
+                    style_filter={
+                        'backgroundColor': COLORS['text'],
+                        'border': '0px'
+                    },
+
                     style_header={
                         'backgroundColor': 'rgb(30, 30, 30)',
-                        'fontWeight': 'bold'
+                        'fontWeight': 'bold',
+                        'border': '0px'
                     },
+                    hidden_columns=['detail', 'method'],
+                    locale_format={
+                        'decimal': '.',
+                        'group': ',',
+                        'grouping': 3
+                    },
+                    style_table={
+                        'width': '90%',
+                        'marginLeft': '5%',
+                        'marginRight': '5%'
+
+                    },
+
                     id='datatable'
                 )
             ],
@@ -398,44 +260,10 @@ app.layout = html.Div(
 
 
 @app.callback(
-    dash.dependencies.Output('bar_sub', 'figure'),
+    dash.dependencies.Output('sub_category_figure_bar', 'figure'),
     [dash.dependencies.Input('category_radio_item', 'value')])
 def update_figure(category):
-    df_sub = df_month[df_month['category'] == category].copy()
-    df_sub.loc[:, ('sub_category')] = (
-        df_sub['sub_category']
-            .apply(replace_none)
-    )
-    fig_bar_sub = (
-        df_sub.groupby(['date', 'sub_category'], as_index=False)['amount']
-            .sum()
-            .pivot(index='date', columns='sub_category', values='amount')
-            .iplot(kind='bar', barmode='group', asFigure=True)
-    )
-    df_total_sub = (
-        df_sub.groupby(['date'], as_index=False)['amount']
-            .sum()
-            .set_index('date')
-    )
-    fig_bar_sub['layout'] = generate_layout(title=category)
-    fig_bar_sub.add_trace(
-        dict(
-            type='scatter',
-            x=list(df_total_sub.index),
-            y=df_total_sub['amount'],
-            mode='lines+markers',
-            marker=dict(
-                size=3,
-                color='rgba(255, 0, 0, 0.7)'
-            ),
-            line=dict(
-                color='rgba(255, 0, 0, 0.7)',
-                width=2
-            ),
-            name='Total'
-        )
-    )
-    return fig_bar_sub
+    return account.get_sub_category_figure_bar(category)
 
 
 if __name__ == '__main__':
