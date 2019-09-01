@@ -26,6 +26,7 @@ def run_app(project_folder: str, database_name: str):
     account_name = 'HSBC UK'  # Whren more accounts are supported, this will be selected via callback in the dash_app
     account = Account(database=database, account_name=account_name)
     app = dash.Dash(__name__, assets_folder=ASSETS_PATH)
+    app.title = 'Transactions Analysis'
     app.layout = html.Div(
         children=[
             main_header(account),
