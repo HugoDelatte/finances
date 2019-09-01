@@ -35,6 +35,9 @@ class Char:
                 f' | col: {self.col}')
 
     def get_col(self):
+        """
+        Get the column name from the pds statement based on the layout
+        """
         if self.x0 < COL['date']:
             self.col = 0
             self.col_name = 'date'
@@ -67,6 +70,9 @@ class String:
         self.text = ''
 
     def clean(self):
+        """
+        Remove blank space from the string
+        """
         if self.text != '':
             if self.text[0] == ' ':
                 self.text = self.text[1:]
@@ -79,6 +85,10 @@ class String:
 
 
 class StatementReader:
+    """
+    Reader Class of a pdf statement
+    """
+
     def __init__(self, file: Union[str, Path]):
         self.start_balance = None
         self.transaction_list = []
@@ -89,6 +99,10 @@ class StatementReader:
         self.interpreter = PDFPageInterpreter(resource_manager, self.device)
 
     def read_statement(self):
+        """
+        Read the pdf statement pages
+        :return: statement pages
+        """
         # Process each page contained in the statement.
         page_list = []
         for page in PDFPage.get_pages(self.f):
@@ -98,6 +112,11 @@ class StatementReader:
         return page_list
 
     def read_page(self, page: Iterator[PDFPage]):
+        """
+        Read a page from the statement
+        :param page: statement page
+        :return: strings of the page
+        """
         characters = []
         self.interpreter.process_page(page)
         layout = self.device.get_result()
@@ -145,11 +164,18 @@ class StatementReader:
         return str_list
 
     def get_statement_details(self):
+        """
+        Map the strings from the all the statement pages to attributes
+        """
         page_list = self.read_statement()
         for str_list in page_list:
             self.get_transaction_details(str_list)
 
     def get_transaction_details(self, str_list: Iterator[String]):
+        """
+        Map the strings from the page to attributes
+        :param str_list: string list of a page
+        """
         while True:
             string = next(str_list, None)
             if string is None:
@@ -212,5 +238,8 @@ class StatementReader:
                     break
 
     def close_statement(self):
+        """
+        Close the pdf statement
+        """
         self.f.close()
         self.device.close()

@@ -1,22 +1,46 @@
 import pandas as pd
 
 COLORS = dict(
-    background='#000000',
-    text='#CCCCCC',
-    plot='#191A1A',
-    grid='#404040',
-    border='#404040'
+    background='rgb(15, 15, 15)',
+    text='rgb(170, 170, 170)',
+    plot='rgb(25, 25, 25)',
+    grid='rgb(65, 65, 65)',
 )
+
+TAB_STYLE = {
+    'color': 'rgb(170,170,170)',
+    'backgroundColor': 'rgb(30,30,30)',
+    'borderTop': '0px',
+    'borderLeft': '0px',
+    'borderRight': '0px',
+    'borderBottom': '0.8px solid rgb(90,90,90)',
+    'padding': '0.5%'
+}
+
+TAB_SELECTED_STYLE = {
+    'color': 'rgb(200,200,200)',
+    'backgroundColor': 'rgb(50,50,50)',
+    'borderTop': '1px solid rgb(600,180,50)',
+    'borderLeft': '0.8px solid rgb(100,100,100)',
+    'borderRight': '0.8px solid rgb(100,100,100)',
+    'borderBottom': '0px',
+    'padding': '0.5%'
+}
 
 
 def generate_layout(title):
+    """
+    Generate the layout of a figure
+    :param title: Title of the figure
+    :return: figure layout
+    """
     return dict(
         title=title,
         autosize=True,
-        height=500,
+        height=460,
         font=dict(color=COLORS['text']),
         titlefont=dict(color=COLORS['text'], size=14),
-        margin=dict(l=45, r=35, b=35, t=45),
+        margin=dict(l=30, r=20, b=30, t=30),
         legend=dict(bgcolor=COLORS['background'],
                     font=dict(color=COLORS['text']),
                     orientation='h'),
@@ -39,6 +63,11 @@ def generate_layout(title):
 
 
 def get_trace(df: pd.DataFrame):
+    """
+    Return the figure trace of the DataFrame's amount column
+    :param df: DataFrame containing the amount column
+    :return: the figure trace
+    """
     return dict(
         type='scatter',
         x=list(df.index),
@@ -54,10 +83,3 @@ def get_trace(df: pd.DataFrame):
         ),
         name='Total'
     )
-
-
-def get_color_class_name(number):
-    if number >= 0:
-        return 'green'
-    else:
-        return 'red'

@@ -1,15 +1,21 @@
 import sqlite3
 import logging
 import datetime as dt
-from finances.utils.logger import create_logger
 from pathlib import Path, PurePath
 from pandas.tseries.offsets import Day
-from finances.utils.database import create_db, get_db_last_date, get_balance
-from finances.utils.tools import to_date, statement_file_date
-from finances.processing.statement import Statement
+from .utils.logger import create_logger
+from .database.database import create_db, get_db_last_date, get_balance
+from .utils.tools import to_date, statement_file_date
+from .processing.statement import Statement
 
 
 def get_statement_file(statements_folder: Path, last_date: dt.date):
+    """
+    Find the pdf statements from the statement folder from a given date to the last available date
+    :param statements_folder: statement folder
+    :param last_date: date of the last statement saved in the database
+    :return: the path of the statements files
+    """
     statement_file_list = []
     for statement_file in Path(statements_folder).iterdir():
         if statement_file.name[:10] == 'statements' and statement_file.suffix == '.pdf':
@@ -20,6 +26,12 @@ def get_statement_file(statements_folder: Path, last_date: dt.date):
 
 
 def archive_statements(project_folder: str, database_name: str, statements_folder: str):
+    """
+    Archive each given statement in the Database
+    :param project_folder: the project folder
+    :param database_name: the database name
+    :param statements_folder: the statement folder
+    """
     create_logger(Path(project_folder))
     logger = logging.getLogger('finances.archiver')
     if not Path(project_folder).exists():

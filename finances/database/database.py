@@ -16,6 +16,10 @@ ATTRIBUTES = {'date': 'Date',
 
 
 def create_db(db_cursor: sqlite3.Cursor):
+    """
+    Creates the Database structure
+    :param db_cursor: database cursor
+    """
     db_cursor.execute(
         '''
         CREATE TABLE Method(
@@ -73,6 +77,14 @@ def create_db(db_cursor: sqlite3.Cursor):
 
 
 def get_attr_id(db_cursor: sqlite3.Cursor, attribute: str, value: str, symbol: str = None):
+    """
+    Retrieve the id of the given the attribute name and its value
+    :param db_cursor: database cursor
+    :param attribute: the attribute name
+    :param value: the attribute value
+    :param symbol: the transaction symbol
+    :return: id
+    """
     if pd.isnull(value):
         return None
     db_cursor.execute('SELECT ' + attribute + '_id '
@@ -93,6 +105,11 @@ def get_attr_id(db_cursor: sqlite3.Cursor, attribute: str, value: str, symbol: s
 
 
 def save_transaction_to_db(db_cursor: sqlite3.Cursor, transaction):
+    """
+    Save a transaction to the database
+    :param db_cursor: database cursor
+    :param transaction: transaction
+    """
     entity_id = get_attr_id(db_cursor, 'entity', transaction.entity_name)
     method_id = get_attr_id(db_cursor, 'method', transaction.method, transaction.method_symbol)
     type_id = get_attr_id(db_cursor, 'type', transaction.type)
@@ -113,20 +130,36 @@ def save_transaction_to_db(db_cursor: sqlite3.Cursor, transaction):
 
 
 def get_balance(db_cursor: sqlite3.Cursor):
+    """
+    Get the actual Balance
+    :param db_cursor: database cursor
+    :return: balance
+    """
     db_cursor.execute('SELECT SUM(amount) FROM Statement')
     return round(db_cursor.fetchone()[0], 2)
 
 
 def get_db_last_date(db_cursor: sqlite3.Cursor):
+    """
+    Get the last saved transaction date
+    :param db_cursor: database cursor
+    :return: last saved transaction date
+    """
     db_cursor.execute('SELECT MAX(date) FROM Statement')
     return db_cursor.fetchone()[0]
 
 
-def load_all_transactions(database: Union[Path, str], account:str= None):
-    if account is None:
+def load_all_transactions(database: Union[Path, str], account_name: str = None):
+    """
+    Load all transactions from the databse for a given account name
+    :param database: the database name
+    :param account_name: the account name
+    :return: Dataframe of all the transactions
+    """
+    if account_name is None:
         account_condition = ''
     else:
-        account_condition = f'''WHERE A.name = '{account}' '''
+        account_condition = f'''WHERE A.name = '{account_name}' '''
     con = sqlite3.connect(database)
     con.execute('pragma foreign_keys=ON')
     db_cursor = con.cursor()

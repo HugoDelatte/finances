@@ -1,0 +1,13 @@
+keyword,entity_name,type,category,sub_category
+COSTA,Costa,Expense,Food & Drink,Coffe shop
+AMORINO,Amorino,Expense,Food & Drink,Fast food
+WAGAMAMA,Wagamama,Expense,Food & Drink,Restaurant
+WAITROSE,Waitrose,Expense,Food & Drink,Grocery
+WASABI,Wasabi,Expense,Food & Drink,Fast food
+WH SMITH,WHSmith,Expense,Shopping,Book
+GLL,Better,Expense,Fitness,Gym
+IKEA,Ikea,Expense,Household,Furniture
+SUREBROADBAND,Pure Broadband,Expense,Utility,Internet
+MORRISONS,Morrisons,Expense,Food & Drink,Grocery
+AMZN Mktp UK,Amazon,Expense,Amazon,
+VUE BLS LIMITED,Vue Cinemas,Expense,Leisure,Cinema

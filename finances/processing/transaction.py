@@ -1,12 +1,16 @@
 import logging
 import pandas as pd
 import sqlite3
-from ..utils.database import save_transaction_to_db
+from ..database.database import save_transaction_to_db
 
 logger = logging.getLogger('finances.transaction')
 
 
 class Transaction:
+    """
+    Transaction Class representing a transaction of a Statement
+    """
+
     def __init__(self, date: str, method: str, method_symbol: str, entity: str, amount: float, ccy: str,
                  account: str):
         self.date = date
@@ -24,6 +28,11 @@ class Transaction:
         self.error = False
 
     def get_entity_detail(self, entity_mapping: pd.DataFrame):
+        """
+        Retrieves the entity details from the transaction's entity_mapping DataFrame
+        :param entity_mapping: entity_mapping DataFrame
+        :return: the transaction's entity details
+        """
         entity_detail_list = []
         for row in entity_mapping.itertuples():
             if self.entity.lower().find(row.keyword.lower()) > -1:
@@ -42,12 +51,20 @@ class Transaction:
         return entity_detail_list[0]
 
     def is_mapping_error(self, entity_detail):
+        """
+        Check for a mapping arror
+        :return: True is a mapping error is found, False otherwise
+        """
         if entity_detail is None:
             self.error = True
             return True
         return False
 
     def map_entity_detail(self, entity_mapping: pd.DataFrame):
+        """
+        Map the transaction's attributes to the transaction's entity details
+        :param entity_mapping: entity mapping DataFrame
+        """
         entity_detail = self.get_entity_detail(entity_mapping)
         if not self.is_mapping_error(entity_detail):
             self.entity_name = entity_detail.entity_name
@@ -61,6 +78,10 @@ class Transaction:
                 self.type = entity_detail.type
 
     def save_to_database(self, db_cursor: sqlite3.Cursor):
+        """
+        Save the transaction the the database
+        :param db_cursor: database cursor
+        """
         save_transaction_to_db(db_cursor, self)
 
     def __str__(self):
@@ -70,5 +91,9 @@ class Transaction:
                 f' | amount: {self.amount}')
 
     def to_dict(self):
+        """
+        dictionary of the transaction attribute used for the mapping error file
+        :return: dict the transaction attributes
+        """
         fields = ['date', 'method', 'entity', 'amount', 'mapping_error']
         return {attr: getattr(self, attr) for attr in fields}

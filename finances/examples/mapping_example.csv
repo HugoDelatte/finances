@@ -1,0 +1,84 @@
+type,category,sub_vategory
+Income,Paycheck,
+,Investment,
+,Deposit Refund,
+,Cash In,
+Expense ,Transport,Tube
+,,Parking
+,,Bike maintenance
+,,Bike payment
+,,Bike insurance
+,,Taxi
+,,City bike
+,,Bus
+,Fee,Check order
+,,Service fee
+,,Bank fee
+,,Transaction fee
+,,ATM fee
+,Charity,
+,Gift,
+,Shopping,Clothing
+,,Various
+,,Book
+,,Electronic
+,Food & Drink,Grocery
+,,Restaurant
+,,Coffe shop
+,,Fast food
+,,Bakery
+,,Delivery
+,,Bar
+,,Tea room
+,,Food market
+,Healthcare,Dentist
+,,Doctor
+,,Eye care
+,,Medication
+,,Supplement
+,,Health insurance
+,,Psychotherapy
+,Fitness,Gym
+,,Swimming
+,,Running
+,,Electronic device
+,,Bicycling
+,,Resistance training
+,,Various
+,Household,Rent
+,,Furniture
+,,Various
+,,Decorating
+,,Electronic
+,,Deposit
+,,Kitchen
+,Leisure,Books
+,,Streaming
+,,Cinema
+,,Theatre
+,,Music
+,,Museum
+,Saving,Retirment
+,,Investment
+,Tax,Council tax
+,Utility,Water
+,,Television
+,,Internet
+,,Mobile phone
+,,Electricity
+,,Hot water
+,Vacation,Air travel
+,,Hotel
+,,Rental Car
+,,Taxi
+,,Train
+,,Restaurant
+,,Grocery
+,,Various
+,Personal Care,Dry cleaner
+,,Shoes
+,,Smartphone App
+,,Hairdresser
+,,Body products
+,Amazon,
+,Loan,
