@@ -6,7 +6,7 @@ into a database and analyse them through an interactive app.
 ## Motivation
 
 At the time of writing, HSBC UK provides personal account statements only in pdf.
-This package read your HSBC statements from pdf, convert and save them into a local sqlite database in order
+This package reads your HSBC statements from pdf, converts and saves them into a local sqlite database in order
 to analyse your account transactions and track your spending via a Dash interactive app.
 For the moment, only statements from HSBC UK are supported.
 
@@ -49,15 +49,15 @@ from finances.archiver import archive_statements
 archive_statements('my_project_folder', 'my_database_name', 'my_statements_folder')
 ```
  
-Each transaction is mapped to an entity from the entity_mapping.csv using using keyword.
+Each transaction is mapped to an entity from the entity_mapping.csv using keywords.
 The mapping algorithm is straightforward.
 Their is a trade-off between maximal mapping flexibility and minimal editing.
-The entity from the entity_mapping file assigned to the transactions is the one with the keyword of maximum length
+The entity from the entity_mapping.csv file assigned to the transactions is the one with the keyword of maximum length
 that matches the begining of the transaction description.
 When no entity is found, the transaction details are saved in the error folder.
-In that case, you have to add the missing mapping into the entity_mapping.csv file. 
+In that case, you have to add the missing mapping into the entity_mapping.csv file.
 
-* To run the app, run the following lines
+* To use the app, run the following lines
 
 ```bash
 from finances.app import run_app
