@@ -13,23 +13,24 @@ For the moment, only statements from HSBC UK are supported.
 
 ## App Demo
 ![](transactions_analysis.gif)
+###### *(The data used in this Demo App comes from a simulation)*
 
 ## Installation
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the package finances:
 
-```bash
+```
 pip install finances
 ```
 
 Install the dependencies using requirement.txt:
-```bash
+```
 pip install -r requirements.txt  
 ```
 
 You can also create a virtual environment from the environment.yml file:
 
-```bash
+```
 conda env create -f environment.yml
 ```
 
@@ -43,7 +44,7 @@ files.
 
 * To save the statements into the database, run the following lines
 
-```bash
+```
 from finances.archiver import archive_statements
 
 archive_statements('my_project_folder', 'my_database_name', 'my_statements_folder')
@@ -59,7 +60,7 @@ In that case, you have to add the missing mapping into the entity_mapping.csv fi
 
 * To use the app, run the following lines
 
-```bash
+```
 from finances.app import run_app
 
 run_app('my_project_folder', 'my_database_name')
@@ -69,6 +70,16 @@ run_app('my_project_folder', 'my_database_name')
 
 You can find mapping and code examples in finances.examples
 
-
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
+
+### DISCLAIMER
+
+The material and information contained in this library is for general information purposes only. You should not rely
+upon the material or information in this library as a basis for making any business, legal or any other decisions.
+The author makes no representations or warranties of any kind, express or implied about the completeness,
+accuracy, reliability, suitability or availability with respect to the information, or related graphics contained 
+in this library for any purpose. Any reliance you place on such material is therefore strictly at your own risk.
+The author will not be liable for any false, inaccurate, inappropriate or incomplete information generated
+by this library.
+This library has been developed independently and is not liked to any banking entity.
