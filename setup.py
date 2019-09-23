@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='finances',
-    version='1.4.0',
+    version='1.5.0',
     author='Hugo Delatte',
     author_email='delatte.hugo@gmail.com',
     description='Analyse your HSBC statements ',
