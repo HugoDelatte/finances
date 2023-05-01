@@ -6,7 +6,7 @@ dash-core-components==1.1.1
 dash-html-components==1.0.0
 dash-renderer==1.0.0
 dash-table==4.1.0
-Flask==1.1.1
+Flask==2.3.2
 Flask-Compress==1.4.0
 numpy==1.16.4
 pandas==0.24.2
